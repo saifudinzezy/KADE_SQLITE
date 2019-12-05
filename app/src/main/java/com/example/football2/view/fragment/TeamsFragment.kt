@@ -1,12 +1,17 @@
-package com.example.football2.view
+package com.example.football2.view.fragment
 
-import androidx.appcompat.app.AppCompatActivity
+
+import android.content.Context
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+
 import com.example.football2.R
 import com.example.football2.adapter.MainAdapter
 import com.example.football2.api.ApiRepository
@@ -14,13 +19,18 @@ import com.example.football2.extensions.invisible
 import com.example.football2.extensions.visible
 import com.example.football2.model.Team
 import com.example.football2.presenter.TeamsPresenter
+import com.example.football2.view.TeamsView
 import com.google.gson.Gson
 import org.jetbrains.anko.*
 import org.jetbrains.anko.recyclerview.v7.recyclerView
+import org.jetbrains.anko.support.v4.dip
 import org.jetbrains.anko.support.v4.onRefresh
 import org.jetbrains.anko.support.v4.swipeRefreshLayout
 
-class MainActivity : AppCompatActivity(), TeamsView{
+/**
+ * A simple [Fragment] subclass.
+ */
+class TeamsFragment : Fragment(), AnkoComponent<Context>, TeamsView {
     //lateinit digunakan untuk menginisialisasi nilai variabel sebelum Anda mengaksesnya.
     private lateinit var listTeam: RecyclerView
     private lateinit var progressBar: ProgressBar
@@ -33,10 +43,44 @@ class MainActivity : AppCompatActivity(), TeamsView{
     private lateinit var adapter: MainAdapter
     private lateinit var leagueName: String
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_main)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
+        //adapter rv
+        adapter = MainAdapter(teams)
+        listTeam.adapter = adapter
+
+        val request = ApiRepository()
+        val gson = Gson()
+        presenter = TeamsPresenter(this, request, gson)
+        //spinner
+        val spinnerItems = resources.getStringArray(R.array.league)
+        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, spinnerItems)
+        spinner.adapter = spinnerAdapter
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                leagueName = spinner.selectedItem.toString()
+                presenter.getTeamList(leagueName)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        swipeRefresh.onRefresh {
+            presenter.getTeamList(leagueName)
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return createView(AnkoContext.create(requireContext()))
+    }
+
+    override fun createView(ui: AnkoContext<Context>): View = with(ui){
         linearLayout {
             lparams (width = matchParent, height = wrapContent)
             orientation = LinearLayout.VERTICAL //orientasi vertical
@@ -65,31 +109,6 @@ class MainActivity : AppCompatActivity(), TeamsView{
                     }
                 }
             }
-        }
-
-        //adapter rv
-        adapter = MainAdapter(teams)
-        listTeam.adapter = adapter
-
-        val request = ApiRepository()
-        val gson = Gson()
-        presenter = TeamsPresenter(this, request, gson)
-        //spinner
-        val spinnerItems = resources.getStringArray(R.array.league)
-        val spinnerAdapter = ArrayAdapter(applicationContext, android.R.layout.simple_spinner_dropdown_item, spinnerItems)
-        spinner.adapter = spinnerAdapter
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                leagueName = spinner.selectedItem.toString()
-                presenter.getTeamList(leagueName)
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
-
-        swipeRefresh.onRefresh {
-            presenter.getTeamList(leagueName)
         }
     }
 

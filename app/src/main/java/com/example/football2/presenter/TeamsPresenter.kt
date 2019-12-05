@@ -3,14 +3,14 @@ package com.example.football2.presenter
 import com.example.football2.api.ApiRepository
 import com.example.football2.api.TheSportDBApi
 import com.example.football2.model.TeamResponse
-import com.example.football2.view.MainView
+import com.example.football2.view.TeamsView
 import com.google.gson.Gson
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
-class MainPresenter(private val view: MainView,
-                    private val apiRepository: ApiRepository,
-                    private val gson: Gson
+class TeamsPresenter(private val view: TeamsView,
+                     private val apiRepository: ApiRepository,
+                     private val gson: Gson
 ) {
     fun getTeamList(league: String?) {
         //Ketika presenter sedang menunggu respon, ProgressBar akan ditampilkan.
