@@ -20,6 +20,7 @@ import com.example.football2.extensions.visible
 import com.example.football2.model.Team
 import com.example.football2.presenter.TeamsPresenter
 import com.example.football2.view.TeamsView
+import com.example.football2.view.detail.TeamDetailActivity
 import com.google.gson.Gson
 import org.jetbrains.anko.*
 import org.jetbrains.anko.recyclerview.v7.recyclerView
@@ -47,7 +48,9 @@ class TeamsFragment : Fragment(), AnkoComponent<Context>, TeamsView {
         super.onActivityCreated(savedInstanceState)
 
         //adapter rv
-        adapter = MainAdapter(teams)
+        adapter = MainAdapter(teams){
+            context?.startActivity<TeamDetailActivity>("id" to "${it.teamId}")
+        }
         listTeam.adapter = adapter
 
         val request = ApiRepository()

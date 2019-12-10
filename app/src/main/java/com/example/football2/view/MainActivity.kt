@@ -68,7 +68,9 @@ class MainActivity : AppCompatActivity(), TeamsView{
         }
 
         //adapter rv
-        adapter = MainAdapter(teams)
+        adapter = MainAdapter(teams){
+
+        }
         listTeam.adapter = adapter
 
         val request = ApiRepository()
