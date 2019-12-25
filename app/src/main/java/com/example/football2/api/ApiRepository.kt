@@ -1,10 +1,12 @@
 package com.example.football2.api
 
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import java.net.URL
 
 class ApiRepository {
-    fun doRequest(url: String): String {
-        //extension functions readText untuk membaca url
-        return URL(url).readText()
+    fun doRequestAsync(url: String): Deferred<String> = GlobalScope.async {
+        URL(url).readText()
     }
 }
