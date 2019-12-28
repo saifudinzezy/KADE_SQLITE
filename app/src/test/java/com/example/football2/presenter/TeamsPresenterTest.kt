@@ -1,7 +1,7 @@
 package com.example.football2.presenter
 
 import com.example.football2.api.ApiRepository
-import com.example.football2.api.TestContextProvider
+import com.example.football2.extensions.TestContextProvider
 import com.example.football2.model.Team
 import com.example.football2.model.TeamResponse
 import com.example.football2.view.TeamsView
@@ -46,7 +46,7 @@ class TeamsPresenterTest {
         val league = "English Premiere League"
 
         runBlocking {
-            Mockito.`when`(apiRepository.doRequest(ArgumentMatchers.anyString()))
+            Mockito.`when`(apiRepository.doRequestAsync(ArgumentMatchers.anyString()))
                 .thenReturn(apiResponse)
 
             Mockito.`when`(apiResponse.await()).thenReturn("")
